@@ -7,43 +7,28 @@ using UnityEngine;
 /// </summary>
 public class TimedObjectDestroyer : MonoBehaviour
 {
+    [Header("Settings:")]
     [Tooltip("The lifetime of this gameobject")]
     public float lifetime = 5.0f;
 
     // The amount of time this gameobject has already existed in play mode
     private float timeAlive = 0.0f;
 
-    [Tooltip("Whether to destroy child gameobjects when this gameobject is destroyed")]
+    [Tooltip("Whether or not to destroy child gameobjects when this gameobject is destroyed")]
     public bool destroyChildrenOnDeath = true;
-
-    // Flag which tells whether the application is shutting down (helps avoid errors)
-    public static bool quitting = false;
 
     /// <summary>
     /// Description:
-    /// Standard Unity function called when the application quits
-    /// 
-    /// Ensures that the quitting flag gets set correctly to avoid work as the application quits
-    /// Inputs: 
+    /// Standard Unity function called once every frame
+    /// Input: 
     /// none
     /// Returns: 
     /// void (no return)
     /// </summary>
-    private void OnApplicationQuit()
-    {
-        quitting = true;
-        DestroyImmediate(this.gameObject);
-    }
-
-    /// <summary>
-    /// Description:
-    /// Every frame, increment the amount of time that this gameobject has been alive,
-    /// or if it has exceeded it's maximum lifetime, destroy it
-    /// Inputs: none
-    /// Returns: void (no return)
-    /// </summary>
     void Update()
     {
+        // Every frame, increment the amount of time that this gameobject has been alive,
+        // or if it has exceeded it's maximum lifetime, destroy it
         if (timeAlive > lifetime)
         {
             Destroy(this.gameObject);
@@ -54,12 +39,29 @@ public class TimedObjectDestroyer : MonoBehaviour
         }
     }
 
+    // Flag which tells whether the application is shutting down (helps avoid errors)
+    public static bool quitting = false;
+
+    /// <summary>
+    /// Description:
+    /// Ensures that the quitting flag gets set correctly to avoid work as the application quits
+    /// Input: 
+    /// none
+    /// Return: 
+    /// void (no return)
+    /// </summary>
+    private void OnApplicationQuit()
+    {
+        quitting = true;
+        DestroyImmediate(this.gameObject);
+    }
+
     /// <summary>
     /// Description:
     /// Behavior which triggers when this component is destroyed
-    /// Inputs: 
+    /// Input: 
     /// none
-    /// Returns: 
+    /// Returns:
     /// void (no return)
     /// </summary>
     private void OnDestroy()
@@ -72,7 +74,7 @@ public class TimedObjectDestroyer : MonoBehaviour
                 GameObject childObject = transform.GetChild(i).gameObject;
                 if (childObject != null)
                 {
-                    DestroyImmediate(childObject);
+                    Destroy(childObject);
                 }
             }
         }

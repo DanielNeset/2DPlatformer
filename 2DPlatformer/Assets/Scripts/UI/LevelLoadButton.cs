@@ -14,13 +14,12 @@ public class LevelLoadButton : MonoBehaviour
     /// Loads a level according to the name provided
     /// Input:
     /// string levelToLoadName
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
     /// <param name="levelToLoadName">The name of the level to load</param>
     public void LoadLevelByName(string levelToLoadName)
     {
-        Time.timeScale = 1;
         SceneManager.LoadScene(levelToLoadName);
     }
 }

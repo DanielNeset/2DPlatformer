@@ -27,8 +27,15 @@ public class UIManager : MonoBehaviour
     public int pausePageIndex = 1;
     [Tooltip("Whether or not to allow pausing")]
     public bool allowPause = true;
+    [Header("Polish Effects")]
+    [Tooltip("The effect to create when navigating between UI")]
+    public GameObject navigationEffect;
+    [Tooltip("The effect to create when clicking on or pressing a UI element")]
+    public GameObject clickEffect;
+    [Tooltip("The effect to create when the player is backing out of a Menu page")]
+    public GameObject backEffect;
 
-    // Whether or not the application is paused
+    // Whether the application is paused
     private bool isPaused = false;
 
     // A list of all UI element classes
@@ -43,10 +50,57 @@ public class UIManager : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// Standard Unity function called whenever the attached game object is enabled
-    /// 
+    /// Creates a back effect if one is set
+    /// Input:
+    /// none
+    /// Return:
+    /// void (no return)
+    /// </summary>
+    public void CreateBackEffect()
+    {
+        if (backEffect)
+        {
+            Instantiate(backEffect, transform.position, Quaternion.identity, null);
+        }
+    }
+
+    /// <summary>
+    /// Description:
+    /// Creates a click effect if one is set
+    /// Input:
+    /// none
+    /// Return:
+    /// void (no return)
+    /// </summary>
+    public void CreateClickEffect()
+    {
+        if (clickEffect)
+        {
+            Instantiate(clickEffect, transform.position, Quaternion.identity, null);
+        }
+    }
+
+    /// <summary>
+    /// Description:
+    /// Creates a navigation effect if one is set
+    /// Input:
+    /// none
+    /// Return:
+    /// void (no return)
+    /// </summary>
+    public void CreateNavigationEffect()
+    {
+         if (navigationEffect)
+        {
+            Instantiate(navigationEffect, transform.position, Quaternion.identity, null);
+        }
+    }
+
+    /// <summary>
+    /// Description:
+    /// Standard Unity function called when the attached gameobject becomes enabled
     /// When this component wakes up (including switching scenes) it sets itself as the GameManager's UI manager
-    /// Inputs: 
+    /// Input: 
     /// none
     /// Returns: 
     /// void (no return)
@@ -59,9 +113,9 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Description:
     /// Sets this component as the UI manager for the GameManager
-    /// Inputs: 
+    /// Input: 
     /// none
-    /// Returns: 
+    /// Return: 
     /// void (no return)
     /// </summary>
     private void SetupGameManagerUIManager()
@@ -76,7 +130,7 @@ public class UIManager : MonoBehaviour
     /// Description:
     /// Finds and stores all UIElements in the UIElements list
     /// Input:
-    /// None
+    /// none
     /// Return:
     /// void (no return)
     /// </summary>
@@ -90,7 +144,7 @@ public class UIManager : MonoBehaviour
     /// Gets the event system from the scene if one exists
     /// If one does not exist a warning will be displayed
     /// Input:
-    /// None
+    /// none
     /// Return:
     /// void (no return)
     /// </summary>
@@ -107,9 +161,9 @@ public class UIManager : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// Attempts to set up an input manager with this UI manager so it can get pause input
+    /// Attempts to set up an input manager with this UI so manager so it can get pause input
     /// Input:
-    /// None
+    /// none
     /// Returns:
     /// void (no return)
     /// </summary>
@@ -121,7 +175,7 @@ public class UIManager : MonoBehaviour
         }
         if (inputManager == null)
         {
-            Debug.LogWarning("The UIManager can not find an Input Manager in the scene, without an Input Manager the UI can not pause");
+            Debug.LogWarning("The UIManager is missing a reference to an Input Manager, without a Input Manager the UI can not pause");
         }
     }
 
@@ -129,8 +183,8 @@ public class UIManager : MonoBehaviour
     /// Description:
     /// If the game is paused, unpauses the game.
     /// If the game is not paused, pauses the game.
-    /// Inputs:
-    /// None
+    /// Input:
+    /// none
     /// Retuns:
     /// void (no return)
     /// </summary>
@@ -140,7 +194,7 @@ public class UIManager : MonoBehaviour
         {
             if (isPaused)
             {
-                SetActiveAllPages(false);
+                GoToPage(defaultPage);
                 Time.timeScale = 1;
                 isPaused = false;
             }
@@ -157,14 +211,13 @@ public class UIManager : MonoBehaviour
     /// Description:
     /// Goes through all UI elements and calls their UpdateUI function
     /// Input:
-    /// None
+    /// none
     /// Return:
     /// void (no return)
     /// </summary>
     public void UpdateUI()
     {
-        SetUpUIElements();
-        foreach (UIelement uiElement in UIelements)
+        foreach(UIelement uiElement in UIelements)
         {
             uiElement.UpdateUI();
         }
@@ -172,10 +225,10 @@ public class UIManager : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// Default Unity function that runs once when the script is first started and before Update
-    /// Inputs: 
+    /// Default function from Unity that runs when the script is first started
+    /// Input: 
     /// none
-    /// Returns: 
+    /// Returns:
     /// void (no return)
     /// </summary>
     private void Start()
@@ -183,13 +236,27 @@ public class UIManager : MonoBehaviour
         SetUpInputManager();
         SetUpEventSystem();
         SetUpUIElements();
+        InitilizeFirstPage();
         UpdateUI();
     }
 
     /// <summary>
     /// Description:
+    /// Sets up the first page
+    /// Input:
+    /// none
+    /// Returns:
+    /// void
+    /// </summary>
+    private void InitilizeFirstPage()
+    {
+        GoToPage(defaultPage);
+    }
+
+    /// <summary>
+    /// Description:
     /// Default function from Unity that runs every frame
-    /// Inputs: 
+    /// Input: 
     /// none
     /// Returns: 
     /// void (no return)
@@ -202,7 +269,7 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Description:
     /// If the input manager is set up, reads the pause input
-    /// Inputs:
+    /// Input:
     /// none
     /// Returns:
     /// void (no return)
@@ -211,18 +278,20 @@ public class UIManager : MonoBehaviour
     {
         if (inputManager != null)
         {
-            if (inputManager.pausePressed)
+            if (inputManager.pauseButton == 1)
             {
                 TogglePause();
+                //Consume the input
+                inputManager.pauseButton = 0;
             }
         }
     }
     /// <summary>
     /// Description:
     /// Goes to a page by that page's index
-    /// Inputs: 
-    /// int page
-    /// Returns: 
+    /// Input: 
+    /// int pageIndex
+    /// Return: 
     /// void (no return)
     /// </summary>
     /// <param name="pageIndex">The index in the page list to go to</param>
@@ -239,8 +308,8 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Description:
     /// Goes to a page by that page's name
-    /// Inputs: 
-    /// string pageName
+    /// Input: 
+    /// int pageName
     /// Returns: 
     /// void (no return)
     /// </summary>
@@ -256,11 +325,11 @@ public class UIManager : MonoBehaviour
     /// Description:
     /// Turns all stored pages on or off depending on parameters
     /// Input: 
-    /// bool enable
+    /// bool activated
     /// Returns: 
     /// void (no return)
     /// </summary>
-    /// <param name="activated">The true or false value to set all page game object's activeness to</param>
+    /// <param name="activated">The true or false value to set all page game objects activeness to</param>
     public void SetActiveAllPages(bool activated)
     {
         if (pages != null)

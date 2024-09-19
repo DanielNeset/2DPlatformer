@@ -13,10 +13,10 @@ public class CursorChanger : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// Standard Unity function called once when the script is first loaded and before Update is called
-    /// Inputs:
+    /// Standard Unity function called once before the first update
+    /// Input:
     /// none
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
     void Start()
@@ -26,10 +26,10 @@ public class CursorChanger : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// Changes the cursor to the one set in the inspector
-    /// Inputs:
+    /// Changes the cursor to the one set in editor
+    /// Input:
     /// None
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
     void ChangeCursor()

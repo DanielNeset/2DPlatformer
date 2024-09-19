@@ -14,8 +14,6 @@ public class Damage : MonoBehaviour
     [Header("Damage Settings")]
     [Tooltip("How much damage to deal")]
     public int damageAmount = 1;
-    [Tooltip("Prefab to spawn after doing damage")]
-    public GameObject hitEffect = null;
     [Tooltip("Whether or not to destroy the attached game object after dealing damage")]
     public bool destroyAfterDamage = true;
     [Tooltip("Whether or not to apply damage when triggers collide")]
@@ -26,14 +24,14 @@ public class Damage : MonoBehaviour
     public bool dealDamageOnCollision = false;
 
     /// <summary>
-    /// Description: 
-    /// Standard Unity function called whenever a Collider2D enters any attached 2D trigger collider
-    /// Inputs:
+    /// Description:
+    /// Standard unity function called whenever a Collider2D enters any attached 2D trigger collider
+    /// Input:
     /// Collider2D collision
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
-    /// <param name="collision">The Collider2D that set of the function call</param>
+    /// <param name="collision">The collider that entered the trigger<</param>
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (dealDamageOnTriggerEnter)
@@ -45,12 +43,12 @@ public class Damage : MonoBehaviour
     /// <summary>
     /// Description:
     /// Standard Unity function called every frame a Collider2D stays in any attached 2D trigger collider
-    /// Inputs:
+    /// Input:
     /// Collider2D collision
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
-    /// <param name="collision">The Collider2D that set of the function call</param>
+    /// <param name="collision">The collider that is still in the trigger</param>
     private void OnTriggerStay2D(Collider2D collision)
     {
         if (dealDamageOnTriggerStay)
@@ -62,12 +60,12 @@ public class Damage : MonoBehaviour
     /// <summary>
     /// Description:
     /// Standard Unity function called when a Collider2D hits another Collider2D (non-triggers)
-    /// Inputs:
+    /// Input:
     /// Collision2D collision
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
-    /// <param name="collision">The Collision2D that set of the function call</param>
+    /// <param name="collision">The Collider2D that has hit this Collider2D</param>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (dealDamageOnCollision)
@@ -78,11 +76,11 @@ public class Damage : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// This function deals damage to a health component if the collided 
-    /// with gameobject has a health component attached AND it is on a different team.
-    /// Inputs:
+    /// This function deals damage to a health component 
+    /// if the collided with gameobject has a health component attached AND it is on a different team.
+    /// Input:
     /// GameObject collisionGameObject
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
     /// <param name="collisionGameObject">The game object that has been collided with</param>
@@ -94,16 +92,8 @@ public class Damage : MonoBehaviour
             if (collidedHealth.teamId != this.teamId)
             {
                 collidedHealth.TakeDamage(damageAmount);
-                if (hitEffect != null)
-                {
-                    Instantiate(hitEffect, transform.position, transform.rotation, null);
-                }
                 if (destroyAfterDamage)
                 {
-                    if (gameObject.GetComponent<Enemy>() != null)
-                    {
-                        gameObject.GetComponent<Enemy>().DoBeforeDestroy();
-                    }
                     Destroy(this.gameObject);
                 }
             }

@@ -13,15 +13,15 @@ public class UIPage : MonoBehaviour
 
     /// <summary>
     /// Description:
-    /// Sets the selected UI selectable to the default defined by this UIPage
-    /// Inputs:
+    /// Sets the currently selected UI to the one defaulted by this UIPage
+    /// Input:
     /// none
-    /// Returns:
+    /// Return:
     /// void (no return)
     /// </summary>
     public void SetSelectedUIToDefault()
     {
-        if (defaultSelected != null)
+        if (GameManager.instance != null && GameManager.instance.uiManager != null && defaultSelected != null)
         {
             GameManager.instance.uiManager.eventSystem.SetSelectedGameObject(null);
             GameManager.instance.uiManager.eventSystem.SetSelectedGameObject(defaultSelected);
