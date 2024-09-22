@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class FullHealPickup : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.tag == "Player")
+        {
+            Health playerHealth = collision.gameObject.GetComponent<Health>();
+            playerHealth.ReceiveHealing(playerHealth.maximumHealth);
+            Destroy(this.gameObject);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
